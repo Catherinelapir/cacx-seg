@@ -20,3 +20,12 @@ def IoU(y_true, y_pred):
 
 def IoU_Loss(y_true, y_pred):
     return 1 - IoU(y_true, y_pred)
+
+
+def load_model(path):
+    model = tf.keras.models.load_model(
+        path, custom_objects={"IoU": IoU_Loss}, compile=False
+    )
+    return model.compile(
+        optimizer="adam", loss=IoU_Loss, metrics=[IoU, "binary_accuracy"]
+    )
