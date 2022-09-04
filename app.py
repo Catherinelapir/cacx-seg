@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from PIL import Image
 from matplotlib import image
 from utils import load_model, predict
 
@@ -20,5 +21,7 @@ def index():
 def predict_image():
     image_upload = request.files["image"]
     if image_upload != "":
-        image_upload.save("./static/test.png")
+        img = Image.open(image_upload)
+        img = img.resize((512, 512))
+        img.save("./static/test.png")
     return render_template("index.html", image=True, image_url="/static/test.png")
