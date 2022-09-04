@@ -8,9 +8,6 @@ app = Flask(__name__)
 # load model
 model = load_model("./models/my_model.h5")
 
-# pred = predict("./test.png", model)
-# image.imsave("pred.png", pred, cmap="gray")
-
 
 @app.route("/")
 def index():
@@ -24,4 +21,15 @@ def predict_image():
         img = Image.open(image_upload)
         img = img.resize((512, 512))
         img.save("./static/test.png")
-    return render_template("index.html", image=True, image_url="/static/test.png")
+        pred = predict("./static/test.png", model)
+        image.imsave("pred.png", pred, cmap="copper")
+        mask = Image.open("./pred.png")
+        mask = mask.resize((512, 512))
+        mask = mask.convert("RGBA")
+        mask.save("./static/pred.png")
+    return render_template(
+        "index.html",
+        image=True,
+        image_url="/static/test.png",
+        mask_url="/static/pred.png",
+    )
