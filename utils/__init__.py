@@ -1,10 +1,10 @@
-import cv2
-import math
 import numpy as np
 import keras.backend_config as K
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.utils import normalize
+from tensorflow.keras.preprocessing.image import img_to_array
+from PIL import Image
 from tensorflow.keras.models import load_model
 
 
@@ -26,6 +26,16 @@ def load_model(path):
     model = tf.keras.models.load_model(
         path, custom_objects={"IoU": IoU_Loss}, compile=False
     )
-    return model.compile(
-        optimizer="adam", loss=IoU_Loss, metrics=[IoU, "binary_accuracy"]
-    )
+    model.compile(optimizer="adam", loss=IoU_Loss, metrics=[IoU, "binary_accuracy"])
+    return model
+
+
+def predict(img_path, model):
+    img = Image.open(img_path)
+    print(f"Image type: {type(img)}")
+    img = img.resize((256, 256))
+    img = img_to_array(img)
+    img = normalize(img, axis=0)
+    img = np.expand_dims(img, axis=0)
+    prediction = model.predict(img)
+    return prediction[0, :, :, 0]
